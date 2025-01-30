@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AzureBlobFileUploader.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AzureBlobFileUploader.Controllers
@@ -7,23 +8,39 @@ namespace AzureBlobFileUploader.Controllers
     [ApiController]
     public class FilesController : ControllerBase
     {
+        private readonly IFileService _fileService;
+        public FilesController(IFileService fileService)
+        {
+            _fileService = fileService;
+        }
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok("Hello World");
+            var result = await _fileService.ListAsync();
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(IFormFile file)
+        public async Task<IActionResult> Upload(IFormFile file)
         {
-            return Ok("Hello World");
+            var result = await _fileService.UploadAsync(file);
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("filename")]
         public async Task<IActionResult> Download(string filename)
         {
-            return Ok("Hello World");
+            var result = await _fileService.DownloadAsync(filename);
+            return File(result.Content, result.ContentType, result.Name);
+        }
+
+        [HttpDelete]
+        [Route("filename")]
+        public async Task<IActionResult> Delete(string filename)
+        {
+            var result = await _fileService.DeleteAsync(filename);
+            return Ok(result);
         }
     }
 }
