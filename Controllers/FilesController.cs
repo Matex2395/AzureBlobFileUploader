@@ -24,7 +24,8 @@ namespace AzureBlobFileUploader.Controllers
         public async Task<IActionResult> Upload(IFormFile file)
         {
             var result = await _fileService.UploadAsync(file);
-            return Ok(result);
+            var blob = result.Blob;
+            return Ok(blob.Uri);
         }
 
         [HttpGet]
