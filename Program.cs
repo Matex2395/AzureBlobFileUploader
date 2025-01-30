@@ -1,6 +1,10 @@
+using AzureBlobFileUploader.Interfaces;
+using AzureBlobFileUploader.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton<IFileService, FileService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
