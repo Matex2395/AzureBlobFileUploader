@@ -18,7 +18,7 @@ namespace AzureBlobFileUploader.Services
             var blobUri =
                 $"https://{configuration["AzureBlob:StorageAccount"]}.blob.core.windows.net";
             var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
-            _filesContainer = blobServiceClient.GetBlobContainerClient("files");
+            _filesContainer = blobServiceClient.GetBlobContainerClient("[Container Name goes here]");
         }
 
         public async Task<List<BlobDTO>> ListAsync()

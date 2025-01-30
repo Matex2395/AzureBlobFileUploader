@@ -32,7 +32,11 @@ namespace AzureBlobFileUploader.Controllers
         public async Task<IActionResult> Download(string filename)
         {
             var result = await _fileService.DownloadAsync(filename);
-            return File(result.Content, result.ContentType, result.Name);
+            if (result != null && result.Content != null && result.ContentType != null)
+            {
+                return File(result.Content, result.ContentType, result.Name);
+            }
+            return NotFound();
         }
 
         [HttpDelete]
