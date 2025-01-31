@@ -46,15 +46,28 @@ namespace AzureBlobFileUploader.Services
             BlobResponseDTO response = new();
             BlobClient client = _filesContainer.GetBlobClient(blob.FileName);
 
-            await using (Stream? data = blob.OpenReadStream())
-            {
-                await client.UploadAsync(data);
-            }
+            // Opens Stream but doesn't use it inside a 'using' that closes it before time
+            Stream data = blob.OpenReadStream();
 
-            response.Status = $"Archivo: {blob.FileName} Subido con Éxito";
-            response.Error = false;
-            response.Blob.Uri = client.Uri.AbsoluteUri;
-            response.Blob.Name = client.Name;
+            try
+            {
+                data.Position = 0; // Ensure the Stream is in the beginning
+                await client.UploadAsync(data, overwrite: true);
+
+                response.Status = $"Archivo: {blob.FileName} Subido con Éxito";
+                response.Error = false;
+                response.Blob.Uri = client.Uri.AbsoluteUri;
+                response.Blob.Name = client.Name;
+            }
+            catch (Exception ex)
+            {
+                response.Status = $"Error al subir el archivo: {ex.Message}";
+                response.Error = true;
+            }
+            finally
+            {
+                await data.DisposeAsync(); // Close Stream automatically after upload
+            }
 
             return response;
         }
